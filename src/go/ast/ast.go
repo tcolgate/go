@@ -178,6 +178,14 @@ func (f *Field) End() token.Pos {
 	return f.Type.End()
 }
 
+// A TypeParams
+type TypeParams struct {
+	Opening  token.Pos // position of opening parenthesis/brace, if any
+	List     []*Ident  // field list; or nil
+	Contract *Ident    // field/method/parameter names; or nil
+	Closing  token.Pos // position of closing parenthesis/brace, if any
+}
+
 // A FieldList represents a list of Fields, enclosed by parentheses or braces.
 type FieldList struct {
 	Opening token.Pos // position of opening parenthesis/brace, if any
@@ -926,19 +934,29 @@ type (
 
 	// A FuncDecl node represents a function declaration.
 	FuncDecl struct {
-		Doc  *CommentGroup // associated documentation; or nil
-		Recv *FieldList    // receiver (methods); or nil (functions)
-		Name *Ident        // function/method name
-		Type *FuncType     // function signature: parameters, results, and position of "func" keyword
-		Body *BlockStmt    // function body; or nil for external (non-Go) function
+		Doc        *CommentGroup // associated documentation; or nil
+		Recv       *FieldList    // receiver (methods); or nil (functions)
+		Name       *Ident        // function/method name
+		TypeParams *FuncType     // function signature: parameters, results, and position of "func" keyword
+		Type       *FuncType     // function signature: parameters, results, and position of "func" keyword
+		Body       *BlockStmt    // function body; or nil for external (non-Go) function
+	}
+
+	// A ContractDecl node represents a contract declaration.
+	ContractDecl struct {
+		Doc         *CommentGroup // associated documentation; or nil
+		Name        *Ident        // function/method name
+		Params      *FieldList    // (incoming) parameters
+		Constraints *BlockStmt    // function body; or nil for external (non-Go) function
 	}
 )
 
 // Pos and End implementations for declaration nodes.
 
-func (d *BadDecl) Pos() token.Pos  { return d.From }
-func (d *GenDecl) Pos() token.Pos  { return d.TokPos }
-func (d *FuncDecl) Pos() token.Pos { return d.Type.Pos() }
+func (d *BadDecl) Pos() token.Pos      { return d.From }
+func (d *GenDecl) Pos() token.Pos      { return d.TokPos }
+func (d *FuncDecl) Pos() token.Pos     { return d.Type.Pos() }
+func (d *ContractDecl) Pos() token.Pos { return d.Params.Pos() }
 
 func (d *BadDecl) End() token.Pos { return d.To }
 func (d *GenDecl) End() token.Pos {
@@ -953,13 +971,20 @@ func (d *FuncDecl) End() token.Pos {
 	}
 	return d.Type.End()
 }
+func (d *ContractDecl) End() token.Pos {
+	if d.Constraints != nil {
+		return d.Constraints.End()
+	}
+	return d.Params.End()
+}
 
 // declNode() ensures that only declaration nodes can be
 // assigned to a Decl.
 //
-func (*BadDecl) declNode()  {}
-func (*GenDecl) declNode()  {}
-func (*FuncDecl) declNode() {}
+func (*BadDecl) declNode()      {}
+func (*GenDecl) declNode()      {}
+func (*FuncDecl) declNode()     {}
+func (*ContractDecl) declNode() {}
 
 // ----------------------------------------------------------------------------
 // Files and packages

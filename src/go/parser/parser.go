@@ -1,4 +1,4 @@
-// Copyright 2009 The Go Authors. All rights reserved.
+/st/ Copyright 2009 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -491,12 +491,14 @@ var stmtStart = map[token.Token]bool{
 	token.SWITCH:      true,
 	token.TYPE:        true,
 	token.VAR:         true,
+	token.CONTRACT:    true,
 }
 
 var declStart = map[token.Token]bool{
-	token.CONST: true,
-	token.TYPE:  true,
-	token.VAR:   true,
+	token.CONST:    true,
+	token.TYPE:     true,
+	token.VAR:      true,
+	token.CONTRACT: true,
 }
 
 var exprEnd = map[token.Token]bool{

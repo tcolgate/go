@@ -120,6 +120,7 @@ const (
 	SWITCH
 	TYPE
 	VAR
+	CONTRACT
 	keyword_end
 )
 
@@ -216,11 +217,12 @@ var tokens = [...]string{
 	RANGE:     "range",
 	RETURN:    "return",
 
-	SELECT: "select",
-	STRUCT: "struct",
-	SWITCH: "switch",
-	TYPE:   "type",
-	VAR:    "var",
+	SELECT:   "select",
+	STRUCT:   "struct",
+	SWITCH:   "switch",
+	TYPE:     "type",
+	VAR:      "var",
+	CONTRACT: "contract",
 }
 
 // String returns the string corresponding to the token tok.
